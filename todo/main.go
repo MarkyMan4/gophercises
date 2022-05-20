@@ -80,8 +80,20 @@ func addTodoItem() {
 	writeItems()
 }
 
-func listTodoItems() {
-	if len(items) == 0 {
+func listTodoItems(showCompleted bool) {
+	var itemsForDisplay []Todo
+
+	if showCompleted {
+		itemsForDisplay = items
+	} else {
+		for i := 0; i < len(items); i++ {
+			if !items[i].IsComplete {
+				itemsForDisplay = append(itemsForDisplay, items[i])
+			}
+		}
+	}
+
+	if len(itemsForDisplay) == 0 {
 		fmt.Println("no todos added yet")
 		return
 	}
@@ -89,19 +101,24 @@ func listTodoItems() {
 	writer := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
 	fmt.Fprintln(writer, "Id\tName\tIsComplete")
 
-	for i := 0; i < len(items); i++ {
-		fmt.Fprintf(writer, "%d\t%s\t%t\n", items[i].Id, items[i].Name, items[i].IsComplete)
+	for i := 0; i < len(itemsForDisplay); i++ {
+		fmt.Fprintf(writer, "%d\t%s\t%t\n", itemsForDisplay[i].Id, itemsForDisplay[i].Name, itemsForDisplay[i].IsComplete)
 	}
 
 	writer.Flush()
 }
 
 func markTodoComplete() {
+	if len(items) == 0 {
+		fmt.Println("no todos added yet")
+		return
+	}
+
 	// show todo items, then let the user select one to mark complete
-	listTodoItems()
+	listTodoItems(false)
 
 	var inp string
-	fmt.Print("ID of completed item: ")
+	fmt.Print("\nID of completed item: ")
 	fmt.Scanln(&inp)
 	id, err := strconv.Atoi(inp)
 
@@ -136,7 +153,13 @@ func main() {
 	if cmd == "add" {
 		addTodoItem()
 	} else if cmd == "list" {
-		listTodoItems()
+		showCompleted := false
+
+		if len(os.Args) >= 3 && os.Args[2] == "-c" {
+			showCompleted = true
+		}
+
+		listTodoItems(showCompleted)
 	} else if cmd == "complete" {
 		markTodoComplete()
 	} else if cmd == "clear" {

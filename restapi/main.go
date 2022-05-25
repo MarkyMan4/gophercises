@@ -9,7 +9,7 @@ import (
 type Dog struct {
 	Breed      string `json:"breed"`
 	Size       string `json:"size"`
-	Temperment string `json:"temperment`
+	Temperment string `json:"temperment"`
 }
 
 // returning HTML

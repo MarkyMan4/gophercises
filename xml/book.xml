@@ -1,0 +1,9 @@
+<book>
+  <title>test</title>
+  <chapters>
+    <chapter pages="32">chapter 1</chapter>
+    <chapter pages="53">chapter 2</chapter>
+    <chapter pages="46">chapter 3</chapter>
+    <chapter pages="35">chapter 4</chapter>
+  </chapters>
+</book>

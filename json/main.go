@@ -31,4 +31,9 @@ func main() {
 	for k := range fileData {
 		fmt.Println(k, ":", fileData[k])
 	}
+
+	// Marshal json and print to standard out
+	res, _ := json.MarshalIndent(fileData, "", "  ")
+
+	fmt.Println(string(res))
 }

@@ -51,5 +51,5 @@ func main() {
 	var data map[string]interface{}
 	json.Unmarshal(body, &data)
 
-	fmt.Println(string(body))
+	InsertData(data)
 }

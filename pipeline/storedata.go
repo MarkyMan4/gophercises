@@ -1,12 +1,19 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func InsertData(weatherData map[string]interface{}) {
+	db, err := sql.Open("sqlite3", "db.sqlite")
+
+	if err != nil {
+		log.Fatal("Failed to connect to database")
+	}
+
 	stmt, prepErr := db.Prepare(`
 		insert into current_condition (
 			location_id,
@@ -67,4 +74,8 @@ func InsertData(weatherData map[string]interface{}) {
 		weatherData["id"],
 		weatherData["name"],
 	)
+
+	if insertErr != nil {
+		log.Fatalln(err)
+	}
 }

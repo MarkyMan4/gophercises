@@ -2,73 +2,150 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/MarkyMan4/simple-interpreter/ast"
+	"github.com/MarkyMan4/simple-interpreter/object"
 )
 
-type Operator rune
-type Number int
-
-const (
-	Plus   Operator = '+'
-	Minus           = '-'
-	Mult            = '*'
-	Divide          = '/'
-)
-
-type Expr interface {
-	eval() int
-}
-
-type ComplexExpr struct {
-	Op    Operator
-	Expr1 Expr
-	Expr2 Expr
-}
-
-type SimpleExpr struct {
-	Num Number
-}
-
-func (e *ComplexExpr) eval() int {
-	result := 0
-
-	lhsRes := e.Expr1.eval()
-	rhsRes := e.Expr2.eval()
-
-	switch e.Op {
-	case '+':
-		result = lhsRes + rhsRes
-	case '-':
-		result = lhsRes - rhsRes
-	case '*':
-		result = lhsRes * rhsRes
-	case '/':
-		result = lhsRes / rhsRes
+func eval(node ast.Node) object.Object {
+	switch node := node.(type) {
+	case *ast.IntegerLiteral:
+		return &object.IntegerObject{Value: node.Value}
+	case *ast.FloatLiteral:
+		return &object.FloatObject{Value: node.Value}
+	case *ast.StringLiteral:
+		return &object.StringObject{Value: node.Value}
+	case *ast.InfixExpression:
+		left := eval(node.Left)
+		right := eval(node.Right)
+		return evalInfixExpression(node.Op, left, right)
 	}
 
-	return result
+	return nil
 }
 
-func (e *SimpleExpr) eval() int {
-	return int(e.Num)
+func evalInfixExpression(op ast.Operator, left object.Object, right object.Object) object.Object {
+	if left.Type() == object.INTEGER_OBJ && right.Type() == object.INTEGER_OBJ {
+		return evalIntegerInfixExpression(op, left, right)
+	} else if left.Type() == object.INTEGER_OBJ && right.Type() == object.FLOAT_OBJ {
+		return evalIntegerFloatInfixExpression(op, left, right)
+	} else if left.Type() == object.FLOAT_OBJ && right.Type() == object.INTEGER_OBJ {
+		return evalFloatIntegerInfixExpression(op, left, right)
+	} else if left.Type() == object.FLOAT_OBJ && right.Type() == object.FLOAT_OBJ {
+		return evalFloatInfixExpression(op, left, right)
+	}
+
+	return nil
+}
+
+func evalIntegerInfixExpression(op ast.Operator, left object.Object, right object.Object) object.Object {
+	leftVal := left.(*object.IntegerObject).Value
+	rightVal := right.(*object.IntegerObject).Value
+
+	switch op {
+	case ast.Plus:
+		return &object.IntegerObject{Value: leftVal + rightVal}
+	case ast.Minus:
+		return &object.IntegerObject{Value: leftVal - rightVal}
+	case ast.Mult:
+		return &object.IntegerObject{Value: leftVal * rightVal}
+	case ast.Divide:
+		// for dividing integers, convert them to floats so we get a float in return
+		return &object.FloatObject{Value: float64(leftVal) / float64(rightVal)}
+	default:
+		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%c' for types %s, %s", op, left.Type(), right.Type())}
+	}
+}
+
+func evalFloatIntegerInfixExpression(op ast.Operator, left object.Object, right object.Object) object.Object {
+	leftVal := left.(*object.FloatObject).Value
+	rightVal := float64(right.(*object.IntegerObject).Value)
+
+	switch op {
+	case ast.Plus:
+		return &object.FloatObject{Value: leftVal + rightVal}
+	case ast.Minus:
+		return &object.FloatObject{Value: leftVal - rightVal}
+	case ast.Mult:
+		return &object.FloatObject{Value: leftVal * rightVal}
+	case ast.Divide:
+		return &object.FloatObject{Value: leftVal / rightVal}
+	default:
+		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%c' for types %s, %s", op, left.Type(), right.Type())}
+	}
+}
+
+func evalIntegerFloatInfixExpression(op ast.Operator, left object.Object, right object.Object) object.Object {
+	leftVal := float64(left.(*object.IntegerObject).Value)
+	rightVal := right.(*object.FloatObject).Value
+
+	switch op {
+	case ast.Plus:
+		return &object.FloatObject{Value: leftVal + rightVal}
+	case ast.Minus:
+		return &object.FloatObject{Value: leftVal - rightVal}
+	case ast.Mult:
+		return &object.FloatObject{Value: leftVal * rightVal}
+	case ast.Divide:
+		return &object.FloatObject{Value: leftVal / rightVal}
+	default:
+		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%c' for types %s, %s", op, left.Type(), right.Type())}
+	}
+}
+
+func evalFloatInfixExpression(op ast.Operator, left object.Object, right object.Object) object.Object {
+	leftVal := left.(*object.FloatObject).Value
+	rightVal := right.(*object.FloatObject).Value
+
+	switch op {
+	case ast.Plus:
+		return &object.FloatObject{Value: leftVal + rightVal}
+	case ast.Minus:
+		return &object.FloatObject{Value: leftVal - rightVal}
+	case ast.Mult:
+		return &object.FloatObject{Value: leftVal * rightVal}
+	case ast.Divide:
+		return &object.FloatObject{Value: leftVal / rightVal}
+	default:
+		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%c' for types %s, %s", op, left.Type(), right.Type())}
+	}
 }
 
 func main() {
-	// 3 + ((4 * 5) - 2)
-	// res = 21
-	expr := ComplexExpr{
-		Plus,
-		&SimpleExpr{3},
-		&ComplexExpr{
-			Minus,
-			&ComplexExpr{
-				Mult,
-				&SimpleExpr{4},
-				&SimpleExpr{5},
+	// (1 + (2 / 3.456)) * 2
+	// res = 3.157407
+	expr1 := &ast.InfixExpression{
+		Left: &ast.InfixExpression{
+			Left: &ast.IntegerLiteral{Value: 1},
+			Op:   ast.Plus,
+			Right: &ast.InfixExpression{
+				Left:  &ast.IntegerLiteral{Value: 2},
+				Op:    ast.Divide,
+				Right: &ast.FloatLiteral{Value: 3.456},
 			},
-			&SimpleExpr{2},
 		},
+		Op:    ast.Mult,
+		Right: &ast.IntegerLiteral{Value: 2},
 	}
 
-	res := expr.eval()
-	fmt.Println(res)
+	res := eval(expr1)
+	fmt.Println(res.ToString())
+
+	// invalid operator $ for float and integer
+	expr2 := &ast.InfixExpression{
+		Left: &ast.InfixExpression{
+			Left: &ast.IntegerLiteral{Value: 1},
+			Op:   ast.Plus,
+			Right: &ast.InfixExpression{
+				Left:  &ast.IntegerLiteral{Value: 2},
+				Op:    ast.Divide,
+				Right: &ast.FloatLiteral{Value: 3.456},
+			},
+		},
+		Op:    '$',
+		Right: &ast.IntegerLiteral{Value: 2},
+	}
+
+	res = eval(expr2)
+	fmt.Println(res.ToString())
 }

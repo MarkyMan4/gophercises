@@ -15,11 +15,17 @@ type Node interface {
 	ToString() string
 }
 
+type Statement interface {
+	Node
+	statementNode()
+}
+
 type Expression interface {
 	Node
 	expressionNode()
 }
 
+// expressions
 type IntegerLiteral struct {
 	Value int
 }
@@ -62,3 +68,15 @@ func (i *InfixExpression) ToString() string {
 }
 
 func (i *InfixExpression) expressionNode() {}
+
+// statements
+type LetStatement struct {
+	VarName string
+	Value   Expression
+}
+
+func (l *LetStatement) ToString() string {
+	return fmt.Sprintf("let %s = %s", l.VarName, l.Value.ToString())
+}
+
+func (l *LetStatement) statementNode() {}

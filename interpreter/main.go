@@ -7,7 +7,7 @@ import (
 	"github.com/MarkyMan4/simple-interpreter/object"
 )
 
-func eval(node ast.Node) object.Object {
+func eval(node ast.Node, env *object.Environment) object.Object {
 	switch node := node.(type) {
 	case *ast.IntegerLiteral:
 		return &object.IntegerObject{Value: node.Value}
@@ -15,10 +15,15 @@ func eval(node ast.Node) object.Object {
 		return &object.FloatObject{Value: node.Value}
 	case *ast.StringLiteral:
 		return &object.StringObject{Value: node.Value}
+	case *ast.IdentifierExpression:
+		return env.Get(node.Value)
 	case *ast.InfixExpression:
-		left := eval(node.Left)
-		right := eval(node.Right)
+		left := eval(node.Left, env)
+		right := eval(node.Right, env)
 		return evalInfixExpression(node.Op, left, right)
+	case *ast.LetStatement:
+		val := eval(node.Value, env)
+		env.Set(node.Identifier, val)
 	}
 
 	return nil
@@ -112,6 +117,8 @@ func evalFloatInfixExpression(op ast.Operator, left object.Object, right object.
 }
 
 func main() {
+	env := object.NewEnvironment()
+
 	// (1 + (2 / 3.456)) * 2
 	// res = 3.157407
 	expr1 := &ast.InfixExpression{
@@ -128,7 +135,7 @@ func main() {
 		Right: &ast.IntegerLiteral{Value: 2},
 	}
 
-	res := eval(expr1)
+	res := eval(expr1, env)
 	fmt.Println(res.ToString())
 
 	// invalid operator $ for float and integer
@@ -146,6 +153,6 @@ func main() {
 		Right: &ast.IntegerLiteral{Value: 2},
 	}
 
-	res = eval(expr2)
+	res = eval(expr2, env)
 	fmt.Println(res.ToString())
 }

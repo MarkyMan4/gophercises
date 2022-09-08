@@ -69,14 +69,24 @@ func (i *InfixExpression) ToString() string {
 
 func (i *InfixExpression) expressionNode() {}
 
+type IdentifierExpression struct {
+	Value string // name of identifier
+}
+
+func (i *IdentifierExpression) ToString() string {
+	return i.Value
+}
+
+func (i *IdentifierExpression) expressionNode() {}
+
 // statements
 type LetStatement struct {
-	VarName string
-	Value   Expression
+	Identifier string
+	Value      Expression
 }
 
 func (l *LetStatement) ToString() string {
-	return fmt.Sprintf("let %s = %s", l.VarName, l.Value.ToString())
+	return fmt.Sprintf("let %s = %s", l.Identifier, l.Value.ToString())
 }
 
 func (l *LetStatement) statementNode() {}

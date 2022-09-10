@@ -11,6 +11,7 @@ const (
 	MINUS  = "-"
 	MULT   = "*"
 	DIVIDE = "/"
+	EQ     = "="
 	LPAREN = "("
 	RPAREN = ")"
 	SEMI   = ";"
@@ -18,6 +19,7 @@ const (
 	INT    = "INT"
 	FLOAT  = "FLOAT"
 	STRING = "STRING"
+	EOF    = "EOF"
 )
 
 var keywords = map[string]string{

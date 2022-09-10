@@ -3,17 +3,25 @@ package lexer
 import (
 	"fmt"
 	"testing"
+
+	"github.com/MarkyMan4/simple-interpreter/token"
 )
 
 func TestPrint(t *testing.T) {
-	var m = map[string]string{
-		"var": "var",
+	input := "var x = 5; var y = 10.123 + 90;"
+	lex := NewLexer(input)
+
+	tok := lex.NextToken()
+	tokens := []token.Token{tok}
+
+	for tok.Type != token.EOF {
+		tok = lex.NextToken()
+		tokens = append(tokens, tok)
 	}
 
-	tok, ok := m["var"]
-	fmt.Println(ok)
+	fmt.Println(input + "\n")
 
-	if ok {
-		fmt.Println(tok)
+	for i := range tokens {
+		fmt.Println(tokens[i])
 	}
 }

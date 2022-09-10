@@ -19,3 +19,16 @@ const (
 	FLOAT  = "FLOAT"
 	STRING = "STRING"
 )
+
+var keywords = map[string]string{
+	"var": VAR,
+}
+
+// lookup a value from the input and determine if it is a keyword or an identifier
+func GetIdentOrKeyword(literal string) string {
+	if tok, ok := keywords[literal]; ok {
+		return tok
+	}
+
+	return IDENT
+}

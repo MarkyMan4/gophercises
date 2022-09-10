@@ -6,11 +6,14 @@ import (
 )
 
 func TestPrint(t *testing.T) {
-	// converting string to slice of runes
-	s := "this is a test"
-	chars := []rune(s)
+	var m = map[string]string{
+		"var": "var",
+	}
 
-	for i := range chars {
-		fmt.Println(string(chars[i]))
+	tok, ok := m["var"]
+	fmt.Println(ok)
+
+	if ok {
+		fmt.Println(tok)
 	}
 }

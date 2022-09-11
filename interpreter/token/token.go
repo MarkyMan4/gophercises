@@ -7,6 +7,10 @@ type Token struct {
 
 const (
 	VAR    = "VAR"
+	FOR    = "FOR"
+	IF     = "IF"
+	ELSE   = "ELSE"
+	DEF    = "DEF"
 	PLUS   = "+"
 	MINUS  = "-"
 	MULT   = "*"
@@ -14,6 +18,10 @@ const (
 	EQ     = "="
 	LPAREN = "("
 	RPAREN = ")"
+	LBRACE = "{"
+	RBRACE = "}"
+	LBRACK = "["
+	RBRACK = "]"
 	SEMI   = ";"
 	IDENT  = "IDENT"
 	INT    = "INT"
@@ -23,7 +31,11 @@ const (
 )
 
 var keywords = map[string]string{
-	"var": VAR,
+	"var":  VAR,
+	"for":  FOR,
+	"if":   IF,
+	"else": ELSE,
+	"def":  DEF,
 }
 
 // lookup a value from the input and determine if it is a keyword or an identifier

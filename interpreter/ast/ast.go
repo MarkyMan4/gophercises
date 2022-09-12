@@ -2,14 +2,14 @@ package ast
 
 import "fmt"
 
-type Operator rune
+// type Operator rune
 
-const (
-	Plus   Operator = '+'
-	Minus           = '-'
-	Mult            = '*'
-	Divide          = '/'
-)
+// const (
+// 	Plus   Operator = '+'
+// 	Minus           = '-'
+// 	Mult            = '*'
+// 	Divide          = '/'
+// )
 
 type Node interface {
 	ToString() string
@@ -27,7 +27,7 @@ type Expression interface {
 
 // expressions
 type IntegerLiteral struct {
-	Value int
+	Value int64
 }
 
 func (i *IntegerLiteral) ToString() string {
@@ -58,7 +58,7 @@ func (i *StringLiteral) expressionNode() {}
 
 type InfixExpression struct {
 	Left  Expression
-	Op    Operator
+	Op    string
 	Right Expression
 }
 
@@ -80,13 +80,22 @@ func (i *IdentifierExpression) ToString() string {
 func (i *IdentifierExpression) expressionNode() {}
 
 // statements
-type LetStatement struct {
+type VarStatement struct {
 	Identifier string
 	Value      Expression
 }
 
-func (l *LetStatement) ToString() string {
+func (l *VarStatement) ToString() string {
 	return fmt.Sprintf("let %s = %s", l.Identifier, l.Value.ToString())
 }
 
-func (l *LetStatement) statementNode() {}
+func (l *VarStatement) statementNode() {}
+
+// program is a list of statements
+type Program struct {
+	Statements []Statement
+}
+
+func (p *Program) ToString() string {
+	return ""
+}

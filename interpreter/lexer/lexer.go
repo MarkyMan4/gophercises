@@ -57,7 +57,7 @@ func (l *Lexer) NextToken() token.Token {
 	case '/':
 		tok = token.Token{Type: token.DIVIDE, Literal: string(l.curChar)}
 	case '=':
-		tok = token.Token{Type: token.EQ, Literal: string(l.curChar)}
+		tok = token.Token{Type: token.ASSIGN, Literal: string(l.curChar)}
 	case '(':
 		tok = token.Token{Type: token.LPAREN, Literal: string(l.curChar)}
 	case ')':

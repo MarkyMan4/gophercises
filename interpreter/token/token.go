@@ -15,7 +15,7 @@ const (
 	MINUS  = "-"
 	MULT   = "*"
 	DIVIDE = "/"
-	EQ     = "="
+	ASSIGN = "="
 	LPAREN = "("
 	RPAREN = ")"
 	LBRACE = "{"

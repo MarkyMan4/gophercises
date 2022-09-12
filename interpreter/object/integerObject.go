@@ -3,7 +3,7 @@ package object
 import "fmt"
 
 type IntegerObject struct {
-	Value int
+	Value int64
 }
 
 func (i *IntegerObject) Type() string {

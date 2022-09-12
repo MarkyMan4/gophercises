@@ -17,3 +17,7 @@ func (e *Environment) Get(ident string) Object {
 func (e *Environment) Set(ident string, obj Object) {
 	e.definitions[ident] = obj
 }
+
+func (e *Environment) GetEnvMap() map[string]Object {
+	return e.definitions
+}

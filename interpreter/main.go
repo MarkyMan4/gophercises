@@ -120,7 +120,7 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 
 func main() {
 	env := object.NewEnvironment()
-	l := lexer.NewLexer("var x = 1 + 4; var y = x + 3;")
+	l := lexer.NewLexer("var x = 1.8 + 4; var y = x + 3;")
 	p := parser.NewParser(l)
 	prog := p.Parse()
 

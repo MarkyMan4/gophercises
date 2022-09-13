@@ -2,15 +2,6 @@ package ast
 
 import "fmt"
 
-// type Operator rune
-
-// const (
-// 	Plus   Operator = '+'
-// 	Minus           = '-'
-// 	Mult            = '*'
-// 	Divide          = '/'
-// )
-
 type Node interface {
 	ToString() string
 }

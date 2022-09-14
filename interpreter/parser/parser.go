@@ -45,6 +45,8 @@ func NewParser(l *lexer.Lexer) *Parser {
 		token.MINUS:  p.parseInfixExpression,
 		token.MULT:   p.parseInfixExpression,
 		token.DIVIDE: p.parseInfixExpression,
+		token.LT:     p.parseInfixExpression,
+		token.GT:     p.parseInfixExpression,
 	}
 
 	return p
@@ -71,6 +73,8 @@ func (p *Parser) parseStmt() ast.Statement {
 	switch p.curToken.Type {
 	case token.VAR:
 		return p.parseVarStmt()
+	case token.WHILE:
+		return p.parseWhileStmt()
 	default:
 		return nil
 	}
@@ -171,4 +175,36 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expr.Right = p.parseExpression()
 
 	return expr
+}
+
+func (p *Parser) parseWhileStmt() ast.Statement {
+	whileStmt := &ast.WhileStatement{Statements: []ast.Statement{}}
+
+	if !p.expectNextToken(token.LPAREN) {
+		// may have to skip to end of line?
+		return nil
+	}
+
+	p.nextToken()
+	p.nextToken()
+	whileStmt.Condition = p.parseExpression()
+	if !p.expectNextToken(token.RPAREN) {
+		return nil
+	}
+
+	p.nextToken()
+	if !p.expectNextToken((token.LBRACE)) {
+		return nil
+	}
+
+	p.nextToken()
+	p.nextToken()
+	for p.peekToken.Type != token.RBRACE {
+		whileStmt.Statements = append(whileStmt.Statements, p.parseStmt())
+		p.nextToken()
+	}
+
+	p.nextToken()
+
+	return whileStmt
 }

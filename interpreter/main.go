@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/MarkyMan4/simple-interpreter/ast"
 	"github.com/MarkyMan4/simple-interpreter/lexer"
@@ -26,6 +27,21 @@ func eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.VarStatement:
 		val := eval(node.Value, env)
 		env.Set(node.Identifier, val)
+	case *ast.WhileStatement:
+		condResult := eval(node.Condition, env)
+		if condResult.Type() != object.BOOLEAN_OBJ {
+			fmt.Println("condition must return a boolean")
+			os.Exit(1)
+		}
+
+		// if the condition is still true, run all statements and evaluate the loop again
+		if condResult.(*object.BooleanObject).Value {
+			for i := range node.Statements {
+				eval(node.Statements[i], env)
+			}
+
+			eval(node, env)
+		}
 	}
 
 	return nil
@@ -59,6 +75,10 @@ func evalIntegerInfixExpression(op string, left object.Object, right object.Obje
 	case "/":
 		// for dividing integers, convert them to floats so we get a float in return
 		return &object.FloatObject{Value: float64(leftVal) / float64(rightVal)}
+	case "<":
+		return &object.BooleanObject{Value: leftVal < rightVal}
+	case ">":
+		return &object.BooleanObject{Value: leftVal > rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}
@@ -77,6 +97,10 @@ func evalFloatIntegerInfixExpression(op string, left object.Object, right object
 		return &object.FloatObject{Value: leftVal * rightVal}
 	case "/":
 		return &object.FloatObject{Value: leftVal / rightVal}
+	case "<":
+		return &object.BooleanObject{Value: leftVal < rightVal}
+	case ">":
+		return &object.BooleanObject{Value: leftVal > rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}
@@ -95,6 +119,10 @@ func evalIntegerFloatInfixExpression(op string, left object.Object, right object
 		return &object.FloatObject{Value: leftVal * rightVal}
 	case "/":
 		return &object.FloatObject{Value: leftVal / rightVal}
+	case "<":
+		return &object.BooleanObject{Value: leftVal < rightVal}
+	case ">":
+		return &object.BooleanObject{Value: leftVal > rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}
@@ -113,6 +141,10 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 		return &object.FloatObject{Value: leftVal * rightVal}
 	case "/":
 		return &object.FloatObject{Value: leftVal / rightVal}
+	case "<":
+		return &object.BooleanObject{Value: leftVal < rightVal}
+	case ">":
+		return &object.BooleanObject{Value: leftVal > rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}
@@ -120,7 +152,8 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 
 func main() {
 	env := object.NewEnvironment()
-	l := lexer.NewLexer("var x = 1.8 + 4; var y = x + 3;")
+	// l := lexer.NewLexer("var x = 1.8 + 4; var y = x + 3; var z = x > y;")
+	l := lexer.NewLexer("var x = 1; while(x < 5) {var x = x + 1;}")
 	p := parser.NewParser(l)
 	prog := p.Parse()
 
@@ -133,41 +166,4 @@ func main() {
 	for k, v := range env.GetEnvMap() {
 		fmt.Printf("%s: %s\n", k, v.ToString())
 	}
-
-	// (1 + (2 / 3.456)) * 2
-	// res = 3.157407
-	// expr1 := &ast.InfixExpression{
-	// 	Left: &ast.InfixExpression{
-	// 		Left: &ast.IntegerLiteral{Value: 1},
-	// 		Op:   "+",
-	// 		Right: &ast.InfixExpression{
-	// 			Left:  &ast.IntegerLiteral{Value: 2},
-	// 			Op:    "/",
-	// 			Right: &ast.FloatLiteral{Value: 3.456},
-	// 		},
-	// 	},
-	// 	Op:    "*",
-	// 	Right: &ast.IntegerLiteral{Value: 2},
-	// }
-
-	// res := eval(expr1, env)
-	// fmt.Println(res.ToString())
-
-	// // invalid operator $ for float and integer
-	// expr2 := &ast.InfixExpression{
-	// 	Left: &ast.InfixExpression{
-	// 		Left: &ast.IntegerLiteral{Value: 1},
-	// 		Op:   "+",
-	// 		Right: &ast.InfixExpression{
-	// 			Left:  &ast.IntegerLiteral{Value: 2},
-	// 			Op:    "/",
-	// 			Right: &ast.FloatLiteral{Value: 3.456},
-	// 		},
-	// 	},
-	// 	Op:    "$",
-	// 	Right: &ast.IntegerLiteral{Value: 2},
-	// }
-
-	// res = eval(expr2, env)
-	// fmt.Println(res.ToString())
 }

@@ -58,14 +58,18 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.Token{Type: token.DIVIDE, Literal: string(l.curChar)}
 	case '=':
 		tok = token.Token{Type: token.ASSIGN, Literal: string(l.curChar)}
+	case '<':
+		tok = token.Token{Type: token.LT, Literal: string(l.curChar)}
+	case '>':
+		tok = token.Token{Type: token.GT, Literal: string(l.curChar)}
 	case '(':
 		tok = token.Token{Type: token.LPAREN, Literal: string(l.curChar)}
 	case ')':
 		tok = token.Token{Type: token.RPAREN, Literal: string(l.curChar)}
 	case '{':
-		tok = token.Token{Type: token.RBRACE, Literal: string(l.curChar)}
-	case '}':
 		tok = token.Token{Type: token.LBRACE, Literal: string(l.curChar)}
+	case '}':
+		tok = token.Token{Type: token.RBRACE, Literal: string(l.curChar)}
 	case '[':
 		tok = token.Token{Type: token.RBRACK, Literal: string(l.curChar)}
 	case ']':

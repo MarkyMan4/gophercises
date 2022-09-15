@@ -18,6 +18,8 @@ func eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.FloatObject{Value: node.Value}
 	case *ast.StringLiteral:
 		return &object.StringObject{Value: node.Value}
+	case *ast.BooleanLiteral:
+		return &object.BooleanObject{Value: node.Value}
 	case *ast.IdentifierExpression:
 		return env.Get(node.Value)
 	case *ast.InfixExpression:
@@ -153,7 +155,8 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 func main() {
 	env := object.NewEnvironment()
 	// l := lexer.NewLexer("var x = 1.8 + 4; var y = x + 3; var z = x > y;")
-	l := lexer.NewLexer("var x = 1; while(x < 5) {var x = x + 1;}")
+	// l := lexer.NewLexer("var x = 1; while(x < 5) {var x = x + 1;}")
+	l := lexer.NewLexer("var x = true;")
 	p := parser.NewParser(l)
 	prog := p.Parse()
 

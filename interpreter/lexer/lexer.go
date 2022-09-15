@@ -57,11 +57,26 @@ func (l *Lexer) NextToken() token.Token {
 	case '/':
 		tok = token.Token{Type: token.DIVIDE, Literal: string(l.curChar)}
 	case '=':
-		tok = token.Token{Type: token.ASSIGN, Literal: string(l.curChar)}
+		if l.peek() == '=' {
+			tok = token.Token{Type: token.EQ, Literal: "=="}
+			l.nextChar()
+		} else {
+			tok = token.Token{Type: token.ASSIGN, Literal: string(l.curChar)}
+		}
 	case '<':
-		tok = token.Token{Type: token.LT, Literal: string(l.curChar)}
+		if l.peek() == '=' {
+			tok = token.Token{Type: token.LTE, Literal: "<="}
+			l.nextChar()
+		} else {
+			tok = token.Token{Type: token.LT, Literal: string(l.curChar)}
+		}
 	case '>':
-		tok = token.Token{Type: token.GT, Literal: string(l.curChar)}
+		if l.peek() == '=' {
+			tok = token.Token{Type: token.GTE, Literal: ">="}
+			l.nextChar()
+		} else {
+			tok = token.Token{Type: token.GT, Literal: string(l.curChar)}
+		}
 	case '(':
 		tok = token.Token{Type: token.LPAREN, Literal: string(l.curChar)}
 	case ')':
@@ -134,5 +149,11 @@ func (l *Lexer) readIdent() token.Token {
 		literal += string(l.curChar)
 	}
 
-	return token.Token{Type: token.GetIdentOrKeyword(literal), Literal: literal}
+	tokType := token.GetIdentOrKeyword(literal)
+
+	if literal == "true" || literal == "false" {
+		tokType = token.BOOLEAN
+	}
+
+	return token.Token{Type: tokType, Literal: literal}
 }

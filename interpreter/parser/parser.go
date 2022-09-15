@@ -34,9 +34,10 @@ func NewParser(l *lexer.Lexer) *Parser {
 
 	// prefix parsers (e.g. an int is a prefix in an expression)
 	p.prefixParsers = map[string]prefixParser{
-		token.INT:   p.parseIntegerLiteral,
-		token.FLOAT: p.parseFloatLiteral,
-		token.IDENT: p.parseIdent,
+		token.INT:     p.parseIntegerLiteral,
+		token.FLOAT:   p.parseFloatLiteral,
+		token.BOOLEAN: p.parseBooleanLiteral,
+		token.IDENT:   p.parseIdent,
 	}
 
 	// infix parsers (e.g. +, -, *, /)
@@ -46,7 +47,10 @@ func NewParser(l *lexer.Lexer) *Parser {
 		token.MULT:   p.parseInfixExpression,
 		token.DIVIDE: p.parseInfixExpression,
 		token.LT:     p.parseInfixExpression,
+		token.LTE:    p.parseInfixExpression,
+		token.EQ:     p.parseInfixExpression,
 		token.GT:     p.parseInfixExpression,
+		token.GTE:    p.parseInfixExpression,
 	}
 
 	return p
@@ -159,6 +163,21 @@ func (p *Parser) parseFloatLiteral() ast.Expression {
 	floatLit.Value = val
 
 	return floatLit
+}
+
+func (p *Parser) parseBooleanLiteral() ast.Expression {
+	boolLit := &ast.BooleanLiteral{}
+	val, err := strconv.ParseBool(p.curToken.Literal)
+
+	if err != nil {
+		errMsg := fmt.Sprintf("could not parse %s as type boolean", p.curToken.Literal)
+		p.Errors = append(p.Errors, errMsg)
+		return nil
+	}
+
+	boolLit.Value = val
+
+	return boolLit
 }
 
 func (p *Parser) parseIdent() ast.Expression {

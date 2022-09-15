@@ -45,7 +45,17 @@ func (i *StringLiteral) ToString() string {
 	return i.Value
 }
 
-func (i *StringLiteral) expressionNode() {}
+func (b *StringLiteral) expressionNode() {}
+
+type BooleanLiteral struct {
+	Value bool
+}
+
+func (b *BooleanLiteral) ToString() string {
+	return fmt.Sprint(b.Value)
+}
+
+func (b *BooleanLiteral) expressionNode() {}
 
 type InfixExpression struct {
 	Left  Expression

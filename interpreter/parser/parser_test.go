@@ -8,7 +8,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	l := lexer.NewLexer("while(1 + 2) {var x = 3;}")
+	l := lexer.NewLexer("var y = true; while(1 + 2) {var x = 3;}")
 	p := NewParser(l)
 	prog := p.Parse()
 

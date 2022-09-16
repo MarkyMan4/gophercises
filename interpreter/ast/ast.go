@@ -92,6 +92,18 @@ func (l *VarStatement) ToString() string {
 
 func (l *VarStatement) statementNode() {}
 
+type AssignStatement struct {
+	Identifier string
+	AssignOp   string // assignment operators are =, +=, -=, *=, /=
+	Value      Expression
+}
+
+func (a *AssignStatement) ToString() string {
+	return fmt.Sprintf("%s %s %s;", a.Identifier, a.AssignOp, a.Value.ToString())
+}
+
+func (a *AssignStatement) statementNode() {}
+
 // program is a list of statements
 type Program struct {
 	Statements []Statement

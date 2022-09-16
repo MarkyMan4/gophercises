@@ -43,9 +43,13 @@ func NewParser(l *lexer.Lexer) *Parser {
 	// infix parsers (e.g. +, -, *, /)
 	p.infixParsers = map[string]infixParser{
 		token.PLUS:   p.parseInfixExpression,
+		token.PLUSEQ: p.parseInfixExpression,
 		token.MINUS:  p.parseInfixExpression,
+		token.MINEQ:  p.parseInfixExpression,
 		token.MULT:   p.parseInfixExpression,
+		token.MULTEQ: p.parseInfixExpression,
 		token.DIVIDE: p.parseInfixExpression,
+		token.DIVEQ:  p.parseInfixExpression,
 		token.LT:     p.parseInfixExpression,
 		token.LTE:    p.parseInfixExpression,
 		token.EQ:     p.parseInfixExpression,
@@ -79,6 +83,8 @@ func (p *Parser) parseStmt() ast.Statement {
 		return p.parseVarStmt()
 	case token.WHILE:
 		return p.parseWhileStmt()
+	case token.IDENT:
+		return p.parseAssignStmt()
 	default:
 		return nil
 	}
@@ -226,4 +232,24 @@ func (p *Parser) parseWhileStmt() ast.Statement {
 	p.nextToken()
 
 	return whileStmt
+}
+
+func (p *Parser) parseAssignStmt() ast.Statement {
+	assignStmt := &ast.AssignStatement{Identifier: p.curToken.Literal}
+
+	if !p.expectNextToken(token.ASSIGN) &&
+		!p.expectNextToken(token.PLUSEQ) &&
+		!p.expectNextToken(token.MINEQ) &&
+		!p.expectNextToken(token.MULTEQ) &&
+		!p.expectNextToken(token.DIVEQ) {
+		return nil
+	}
+
+	p.nextToken()
+	assignStmt.AssignOp = p.curToken.Literal
+	p.nextToken()
+
+	assignStmt.Value = p.parseExpression()
+
+	return assignStmt
 }

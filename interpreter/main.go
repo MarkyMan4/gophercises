@@ -29,6 +29,16 @@ func eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.VarStatement:
 		val := eval(node.Value, env)
 		env.Set(node.Identifier, val)
+	case *ast.AssignStatement:
+		if env.Get(node.Identifier) == nil {
+			fmt.Printf("variable %s has not been declared\n", node.Identifier)
+			os.Exit(1)
+		}
+
+		left := env.Get(node.Identifier)
+		right := eval(node.Value, env)
+		val := evalAssignStatement(node.AssignOp, left, right)
+		env.Set(node.Identifier, val)
 	case *ast.WhileStatement:
 		condResult := eval(node.Condition, env)
 		if condResult.Type() != object.BOOLEAN_OBJ {
@@ -44,6 +54,27 @@ func eval(node ast.Node, env *object.Environment) object.Object {
 
 			eval(node, env)
 		}
+	}
+
+	return nil
+}
+
+func evalAssignStatement(assignOp string, left object.Object, right object.Object) object.Object {
+	switch assignOp {
+	case "+=":
+		return evalInfixExpression("+", left, right)
+	case "-=":
+		return evalInfixExpression("-", left, right)
+	case "*=":
+		return evalInfixExpression("*", left, right)
+	case "/=":
+		return evalInfixExpression("/", left, right)
+	case "=":
+		// default is a normal assignment, so just return the right hand side
+		return right
+	default:
+		fmt.Printf("unknown operator %s\n", assignOp)
+		os.Exit(1)
 	}
 
 	return nil
@@ -155,8 +186,8 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 func main() {
 	env := object.NewEnvironment()
 	// l := lexer.NewLexer("var x = 1.8 + 4; var y = x + 3; var z = x > y;")
-	// l := lexer.NewLexer("var x = 1; while(x < 5) {var x = x + 1;}")
-	l := lexer.NewLexer("var x = true;")
+	l := lexer.NewLexer("var x = 1; while(x < 5) {x += 1;}")
+	// l := lexer.NewLexer("var x = true;")
 	p := parser.NewParser(l)
 	prog := p.Parse()
 

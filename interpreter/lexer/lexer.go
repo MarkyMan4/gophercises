@@ -49,13 +49,33 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.curChar {
 	case '+':
-		tok = token.Token{Type: token.PLUS, Literal: string(l.curChar)}
+		if l.peek() == '=' {
+			tok = token.Token{Type: token.PLUSEQ, Literal: "+="}
+			l.nextChar()
+		} else {
+			tok = token.Token{Type: token.PLUS, Literal: string(l.curChar)}
+		}
 	case '-':
-		tok = token.Token{Type: token.MINUS, Literal: string(l.curChar)}
+		if l.peek() == '=' {
+			tok = token.Token{Type: token.MINEQ, Literal: "-="}
+			l.nextChar()
+		} else {
+			tok = token.Token{Type: token.MINUS, Literal: string(l.curChar)}
+		}
 	case '*':
-		tok = token.Token{Type: token.MULT, Literal: string(l.curChar)}
+		if l.peek() == '=' {
+			tok = token.Token{Type: token.MULTEQ, Literal: "*="}
+			l.nextChar()
+		} else {
+			tok = token.Token{Type: token.MULT, Literal: string(l.curChar)}
+		}
 	case '/':
-		tok = token.Token{Type: token.DIVIDE, Literal: string(l.curChar)}
+		if l.peek() == '=' {
+			tok = token.Token{Type: token.DIVEQ, Literal: "/="}
+			l.nextChar()
+		} else {
+			tok = token.Token{Type: token.DIVIDE, Literal: string(l.curChar)}
+		}
 	case '=':
 		if l.peek() == '=' {
 			tok = token.Token{Type: token.EQ, Literal: "=="}

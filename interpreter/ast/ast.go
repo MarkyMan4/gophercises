@@ -111,7 +111,18 @@ type FunctionCall struct {
 }
 
 func (fc *FunctionCall) ToString() string {
-	return ""
+	argsStr := ""
+
+	for i := range fc.Args {
+		argsStr += fc.Args[i].ToString()
+		if i < len(fc.Args)-1 {
+			argsStr += ", "
+		}
+	}
+
+	funcCallStr := fmt.Sprintf("%s(%s);", fc.Name, argsStr)
+
+	return funcCallStr
 }
 
 // function call can be used as both a statement and expression

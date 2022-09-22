@@ -111,6 +111,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.Token{Type: token.LBRACK, Literal: string(l.curChar)}
 	case ';':
 		tok = token.Token{Type: token.SEMI, Literal: string(l.curChar)}
+	case ',':
+		tok = token.Token{Type: token.COM, Literal: string(l.curChar)}
 	case rune(0):
 		tok = token.Token{Type: token.EOF, Literal: ""}
 	default:

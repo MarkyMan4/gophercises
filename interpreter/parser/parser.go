@@ -297,7 +297,6 @@ func (p *Parser) parseAssignStmt() ast.Statement {
 	p.nextToken()
 
 	assignStmt.Value = p.parseExpression()
-	fmt.Println("asfasfsaf")
 
 	if !p.expectNextToken(token.SEMI) {
 		return nil
@@ -353,7 +352,6 @@ func (p *Parser) parseFunctionDef() ast.Statement {
 
 	// TODO: handle missing rbrace
 	for p.curToken.Type != token.RBRACE {
-		fmt.Println("Cur token " + p.curToken.Type)
 		funcDef.Statements = append(funcDef.Statements, p.parseStmt())
 		p.nextToken()
 	}
@@ -388,7 +386,6 @@ func (p *Parser) parseFunctionCall() ast.Statement {
 
 	if p.curToken.Type == token.EOF {
 		errMsg := fmt.Sprintf("Unexpected token %s.", p.curToken.Literal)
-		fmt.Println(errMsg)
 		p.Errors = append(p.Errors, errMsg)
 
 		return nil

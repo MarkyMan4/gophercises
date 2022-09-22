@@ -121,8 +121,14 @@ func evalIntegerInfixExpression(op string, left object.Object, right object.Obje
 		return &object.FloatObject{Value: float64(leftVal) / float64(rightVal)}
 	case "<":
 		return &object.BooleanObject{Value: leftVal < rightVal}
+	case "<=":
+		return &object.BooleanObject{Value: leftVal <= rightVal}
+	case "==":
+		return &object.BooleanObject{Value: leftVal == rightVal}
 	case ">":
 		return &object.BooleanObject{Value: leftVal > rightVal}
+	case ">=":
+		return &object.BooleanObject{Value: leftVal >= rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}
@@ -143,8 +149,14 @@ func evalFloatIntegerInfixExpression(op string, left object.Object, right object
 		return &object.FloatObject{Value: leftVal / rightVal}
 	case "<":
 		return &object.BooleanObject{Value: leftVal < rightVal}
+	case "<=":
+		return &object.BooleanObject{Value: leftVal <= rightVal}
+	case "==":
+		return &object.BooleanObject{Value: leftVal == rightVal}
 	case ">":
 		return &object.BooleanObject{Value: leftVal > rightVal}
+	case ">=":
+		return &object.BooleanObject{Value: leftVal >= rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}
@@ -165,8 +177,14 @@ func evalIntegerFloatInfixExpression(op string, left object.Object, right object
 		return &object.FloatObject{Value: leftVal / rightVal}
 	case "<":
 		return &object.BooleanObject{Value: leftVal < rightVal}
+	case "<=":
+		return &object.BooleanObject{Value: leftVal <= rightVal}
+	case "==":
+		return &object.BooleanObject{Value: leftVal == rightVal}
 	case ">":
 		return &object.BooleanObject{Value: leftVal > rightVal}
+	case ">=":
+		return &object.BooleanObject{Value: leftVal >= rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}
@@ -187,8 +205,14 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 		return &object.FloatObject{Value: leftVal / rightVal}
 	case "<":
 		return &object.BooleanObject{Value: leftVal < rightVal}
+	case "<=":
+		return &object.BooleanObject{Value: leftVal <= rightVal}
+	case "==":
+		return &object.BooleanObject{Value: leftVal == rightVal}
 	case ">":
 		return &object.BooleanObject{Value: leftVal > rightVal}
+	case ">=":
+		return &object.BooleanObject{Value: leftVal >= rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
 	}

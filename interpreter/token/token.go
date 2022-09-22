@@ -11,7 +11,8 @@ const (
 	WHILE   = "WHILE"
 	IF      = "IF"
 	ELSE    = "ELSE"
-	DEF     = "DEF"
+	FUN     = "FUN"
+	RETURN  = "RETURN"
 	PLUS    = "+"
 	MINUS   = "-"
 	MULT    = "*"
@@ -43,12 +44,13 @@ const (
 )
 
 var keywords = map[string]string{
-	"var":   VAR,
-	"for":   FOR,
-	"while": WHILE,
-	"if":    IF,
-	"else":  ELSE,
-	"def":   DEF,
+	"var":    VAR,
+	"for":    FOR,
+	"while":  WHILE,
+	"if":     IF,
+	"else":   ELSE,
+	"fun":    FUN,
+	"return": RETURN,
 }
 
 // lookup a value from the input and determine if it is a keyword or an identifier

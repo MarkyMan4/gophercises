@@ -83,8 +83,18 @@ func (p *Parser) parseStmt() ast.Statement {
 		return p.parseVarStmt()
 	case token.WHILE:
 		return p.parseWhileStmt()
+	case token.IF:
+		return p.parseIfStmt()
 	case token.IDENT:
-		return p.parseAssignStmt()
+		// determine how the ident is being used based on the next token
+		switch p.peekToken.Literal {
+		case token.ASSIGN:
+			return p.parseAssignStmt()
+		case token.LPAREN:
+			return p.parseFunctionCall()
+		default:
+			return nil
+		}
 	default:
 		return nil
 	}
@@ -186,6 +196,7 @@ func (p *Parser) parseBooleanLiteral() ast.Expression {
 	return boolLit
 }
 
+// TODO: handle parsing function calls
 func (p *Parser) parseIdent() ast.Expression {
 	return &ast.IdentifierExpression{Value: p.curToken.Literal}
 }
@@ -224,6 +235,7 @@ func (p *Parser) parseWhileStmt() ast.Statement {
 
 	p.nextToken()
 	p.nextToken()
+	// TODO: handle missing RBRACE
 	for p.peekToken.Type != token.RBRACE {
 		whileStmt.Statements = append(whileStmt.Statements, p.parseStmt())
 		p.nextToken()
@@ -234,9 +246,42 @@ func (p *Parser) parseWhileStmt() ast.Statement {
 	return whileStmt
 }
 
+func (p *Parser) parseIfStmt() ast.Statement {
+	ifStmt := &ast.WhileStatement{Statements: []ast.Statement{}}
+
+	if !p.expectNextToken(token.LPAREN) {
+		// may have to skip to end of line?
+		return nil
+	}
+
+	p.nextToken()
+	p.nextToken()
+	ifStmt.Condition = p.parseExpression()
+	if !p.expectNextToken(token.RPAREN) {
+		return nil
+	}
+
+	p.nextToken()
+	if !p.expectNextToken((token.LBRACE)) {
+		return nil
+	}
+
+	p.nextToken()
+	p.nextToken()
+	for p.peekToken.Type != token.RBRACE {
+		ifStmt.Statements = append(ifStmt.Statements, p.parseStmt())
+		p.nextToken()
+	}
+
+	p.nextToken()
+
+	return ifStmt
+}
+
 func (p *Parser) parseAssignStmt() ast.Statement {
 	assignStmt := &ast.AssignStatement{Identifier: p.curToken.Literal}
 
+	// TODO: don't use expectNextToken() here since it will cause unwanted errors
 	if !p.expectNextToken(token.ASSIGN) &&
 		!p.expectNextToken(token.PLUSEQ) &&
 		!p.expectNextToken(token.MINEQ) &&
@@ -252,4 +297,27 @@ func (p *Parser) parseAssignStmt() ast.Statement {
 	assignStmt.Value = p.parseExpression()
 
 	return assignStmt
+}
+
+func (p *Parser) parseFunctionCall() ast.Statement {
+	funcCall := &ast.FunctionCall{Name: p.curToken.Literal, Args: []ast.Expression{}}
+	if !p.expectNextToken(token.LPAREN) {
+		return nil
+	}
+
+	p.nextToken()
+	p.nextToken()
+
+	for p.curToken.Type != token.RPAREN && p.curToken.Type != token.EOF {
+		funcCall.Args = append(funcCall.Args, p.parseExpression())
+
+		if p.peekToken.Type != token.RPAREN && p.peekToken.Type != token.COM {
+			errMsg := fmt.Sprintf("Unexpected token %s. Expected %s or %s", p.peekToken, token.RPAREN, token.COM)
+			p.Errors = append(p.Errors, errMsg)
+
+			return nil
+		}
+	}
+
+	return funcCall
 }

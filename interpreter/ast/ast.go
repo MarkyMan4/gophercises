@@ -104,14 +104,19 @@ func (a *AssignStatement) ToString() string {
 
 func (a *AssignStatement) statementNode() {}
 
-// program is a list of statements
-type Program struct {
-	Statements []Statement
+// function invocation
+type FunctionCall struct {
+	Name string
+	Args []Expression
 }
 
-func (p *Program) ToString() string {
+func (fc *FunctionCall) ToString() string {
 	return ""
 }
+
+// function call can be used as both a statement and expression
+func (fc *FunctionCall) expressionNode() {}
+func (fc *FunctionCall) statementNode()  {}
 
 // while loop
 type WhileStatement struct {
@@ -132,3 +137,64 @@ func (ws *WhileStatement) ToString() string {
 }
 
 func (ws *WhileStatement) statementNode() {}
+
+// if statement
+type IfStatement struct {
+	Condition  Expression
+	Statements []Statement
+}
+
+func (is *IfStatement) ToString() string {
+	ifAsStr := fmt.Sprintf("if(%s) { ", is.Condition.ToString())
+
+	for i := range is.Statements {
+		ifAsStr += is.Statements[i].ToString() + " "
+	}
+
+	ifAsStr += "}"
+
+	return ifAsStr
+}
+
+func (is *IfStatement) statementNode() {}
+
+// function definition
+type FunctionDef struct {
+	Name       string
+	Args       []string // list of identifiers
+	Statements []Statement
+}
+
+func (fd *FunctionDef) ToString() string {
+	funcStr := fmt.Sprintf("def %s(", fd.Name)
+
+	for i := range fd.Args {
+		funcStr += fd.Args[i]
+		if i < len(fd.Args)-1 {
+			funcStr += ","
+		} else {
+			funcStr += ")"
+		}
+	}
+
+	funcStr += " { "
+
+	for i := range fd.Statements {
+		funcStr += fd.Statements[i].ToString() + " "
+	}
+
+	funcStr += "}"
+
+	return funcStr
+}
+
+func (fd *FunctionDef) statementNode() {}
+
+// program is a list of statements
+type Program struct {
+	Statements []Statement
+}
+
+func (p *Program) ToString() string {
+	return ""
+}

@@ -33,6 +33,7 @@ const (
 	LBRACK  = "["
 	RBRACK  = "]"
 	SEMI    = ";"
+	COM     = ","
 	IDENT   = "IDENT"
 	INT     = "INT"
 	FLOAT   = "FLOAT"

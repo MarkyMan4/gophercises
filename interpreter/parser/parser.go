@@ -85,15 +85,15 @@ func (p *Parser) parseStmt() ast.Statement {
 		return p.parseWhileStmt()
 	case token.IF:
 		return p.parseIfStmt()
+	case token.FUN:
+		return p.parseFunctionDef()
 	case token.IDENT:
 		// determine how the ident is being used based on the next token
 		switch p.peekToken.Literal {
-		case token.ASSIGN:
-			return p.parseAssignStmt()
 		case token.LPAREN:
 			return p.parseFunctionCall()
 		default:
-			return nil
+			return p.parseAssignStmt()
 		}
 	default:
 		return nil
@@ -115,6 +115,12 @@ func (p *Parser) parseVarStmt() ast.Statement {
 	p.nextToken()
 	p.nextToken()
 	stmt.Value = p.parseExpression()
+
+	if !p.expectNextToken(token.SEMI) {
+		return nil
+	}
+
+	p.nextToken()
 
 	return stmt
 }
@@ -236,18 +242,16 @@ func (p *Parser) parseWhileStmt() ast.Statement {
 	p.nextToken()
 	p.nextToken()
 	// TODO: handle missing RBRACE
-	for p.peekToken.Type != token.RBRACE {
+	for p.curToken.Type != token.RBRACE {
 		whileStmt.Statements = append(whileStmt.Statements, p.parseStmt())
 		p.nextToken()
 	}
-
-	p.nextToken()
 
 	return whileStmt
 }
 
 func (p *Parser) parseIfStmt() ast.Statement {
-	ifStmt := &ast.WhileStatement{Statements: []ast.Statement{}}
+	ifStmt := &ast.IfStatement{Statements: []ast.Statement{}}
 
 	if !p.expectNextToken(token.LPAREN) {
 		// may have to skip to end of line?
@@ -268,12 +272,10 @@ func (p *Parser) parseIfStmt() ast.Statement {
 
 	p.nextToken()
 	p.nextToken()
-	for p.peekToken.Type != token.RBRACE {
+	for p.curToken.Type != token.RBRACE {
 		ifStmt.Statements = append(ifStmt.Statements, p.parseStmt())
 		p.nextToken()
 	}
-
-	p.nextToken()
 
 	return ifStmt
 }
@@ -295,8 +297,70 @@ func (p *Parser) parseAssignStmt() ast.Statement {
 	p.nextToken()
 
 	assignStmt.Value = p.parseExpression()
+	fmt.Println("asfasfsaf")
+
+	if !p.expectNextToken(token.SEMI) {
+		return nil
+	}
+
+	p.nextToken()
 
 	return assignStmt
+}
+
+func (p *Parser) parseFunctionDef() ast.Statement {
+	if !p.expectNextToken(token.IDENT) {
+		return nil
+	}
+
+	p.nextToken()
+
+	funcDef := &ast.FunctionDef{
+		Name:       p.prevToken.Literal,
+		Args:       []string{},
+		Statements: []ast.Statement{},
+	}
+
+	if !p.expectNextToken(token.LPAREN) {
+		return nil
+	}
+
+	p.nextToken()
+	p.nextToken()
+
+	for p.curToken.Type == token.IDENT {
+		funcDef.Args = append(funcDef.Args, p.curToken.Literal)
+
+		if p.peekToken.Type != token.RPAREN && p.peekToken.Type != token.COM {
+			errMsg := fmt.Sprintf("Unexpected token %s. Expected %s or %s", p.peekToken, token.RPAREN, token.COM)
+			p.Errors = append(p.Errors, errMsg)
+
+			return nil
+		}
+
+		p.nextToken()
+		p.nextToken()
+	}
+
+	if p.curToken.Type != token.LBRACE {
+		errMsg := fmt.Sprintf("Unexpected token %s. Expected %s", p.curToken.Literal, token.LBRACE)
+		p.Errors = append(p.Errors, errMsg)
+
+		return nil
+	}
+
+	p.nextToken()
+
+	// TODO: handle missing rbrace
+	for p.curToken.Type != token.RBRACE {
+		fmt.Println("Cur token " + p.curToken.Type)
+		funcDef.Statements = append(funcDef.Statements, p.parseStmt())
+		p.nextToken()
+	}
+
+	p.nextToken()
+
+	return funcDef
 }
 
 func (p *Parser) parseFunctionCall() ast.Statement {
@@ -308,7 +372,7 @@ func (p *Parser) parseFunctionCall() ast.Statement {
 	p.nextToken()
 	p.nextToken()
 
-	for p.curToken.Type != token.RPAREN && p.curToken.Type != token.EOF {
+	for p.curToken.Type != token.RPAREN && p.curToken.Type != token.SEMI && p.curToken.Type != token.EOF {
 		funcCall.Args = append(funcCall.Args, p.parseExpression())
 
 		if p.peekToken.Type != token.RPAREN && p.peekToken.Type != token.COM {
@@ -317,6 +381,17 @@ func (p *Parser) parseFunctionCall() ast.Statement {
 
 			return nil
 		}
+
+		p.nextToken()
+		p.nextToken()
+	}
+
+	if p.curToken.Type == token.EOF {
+		errMsg := fmt.Sprintf("Unexpected token %s.", p.curToken.Literal)
+		fmt.Println(errMsg)
+		p.Errors = append(p.Errors, errMsg)
+
+		return nil
 	}
 
 	return funcCall

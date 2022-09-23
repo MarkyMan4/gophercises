@@ -65,8 +65,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 			Eval(node, env)
 		}
-		// case *ast.FunctionDef:
-
+	case *ast.FunctionDef:
+		env.Set(node.Name, &object.FunctionObject{Args: node.Args, Statements: node.Statements})
+	case *ast.FunctionCall:
+		evalFunctionCall(node, env)
 	}
 
 	return nil
@@ -217,5 +219,31 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 		return &object.BooleanObject{Value: leftVal >= rightVal}
 	default:
 		return &object.ErrorObject{Message: fmt.Sprintf("unsupported operator '%s' for types %s, %s", op, left.Type(), right.Type())}
+	}
+}
+
+func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) {
+	if env.Get(functionCall.Name) == nil {
+		fmt.Printf("function %s is not defined\n", functionCall.Name)
+		os.Exit(1)
+	}
+
+	function := env.Get(functionCall.Name).(*object.FunctionObject)
+
+	if len(functionCall.Args) != len(function.Args) {
+		fmt.Printf("expected %d arguments for function %s, received %d\n", len(function.Args), functionCall.Name, len(functionCall.Args))
+		os.Exit(1)
+	}
+
+	childEnv := object.CreateChildEnvironment(env)
+
+	// assign function args as values in child environment
+	for i := range function.Args {
+		childEnv.Set(function.Args[i], Eval(functionCall.Args[i], env))
+	}
+
+	// evaluate each statement in the function
+	for i := range function.Statements {
+		Eval(function.Statements[i], childEnv)
 	}
 }

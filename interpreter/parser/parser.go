@@ -324,7 +324,7 @@ func (p *Parser) parseFunctionDef() ast.Statement {
 	p.nextToken()
 
 	funcDef := &ast.FunctionDef{
-		Name:       p.prevToken.Literal,
+		Name:       p.curToken.Literal,
 		Args:       []string{},
 		Statements: []ast.Statement{},
 	}
@@ -364,8 +364,6 @@ func (p *Parser) parseFunctionDef() ast.Statement {
 		funcDef.Statements = append(funcDef.Statements, p.parseStmt())
 		p.nextToken()
 	}
-
-	p.nextToken()
 
 	return funcDef
 }

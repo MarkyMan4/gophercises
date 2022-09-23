@@ -60,13 +60,17 @@ func TestParseIf(t *testing.T) {
 }
 
 func TestParseFuncDef(t *testing.T) {
-	l := lexer.NewLexer("fun test(x, y) {var a = x; b = y;}")
+	l := lexer.NewLexer("fun test(x, y) {var a = x; b = y;} test(1, 2);")
 	p := NewParser(l)
 	prog := p.Parse()
 
 	stmt := prog.Statements[0].(*ast.FunctionDef)
 
 	fmt.Println(stmt.ToString())
+
+	stmt1 := prog.Statements[1].(*ast.FunctionCall)
+
+	fmt.Println(stmt1.ToString())
 
 	// for i := range prog.Statements {
 	// 	fmt.Println(prog.Statements[i])

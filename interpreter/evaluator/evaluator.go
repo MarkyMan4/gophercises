@@ -65,6 +65,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 			Eval(node, env)
 		}
+		// case *ast.FunctionDef:
+
 	}
 
 	return nil

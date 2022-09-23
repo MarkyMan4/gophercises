@@ -87,6 +87,8 @@ func (p *Parser) parseStmt() ast.Statement {
 		return p.parseIfStmt()
 	case token.FUN:
 		return p.parseFunctionDef()
+	case token.RETURN:
+		return p.parseReturnStmt()
 	case token.IDENT:
 		// determine how the ident is being used based on the next token
 		switch p.peekToken.Literal {
@@ -278,6 +280,13 @@ func (p *Parser) parseIfStmt() ast.Statement {
 	}
 
 	return ifStmt
+}
+
+func (p *Parser) parseReturnStmt() ast.Statement {
+	p.nextToken()
+	returnStmt := &ast.ReturnStatement{ReturnVal: p.parseExpression()}
+
+	return returnStmt
 }
 
 func (p *Parser) parseAssignStmt() ast.Statement {

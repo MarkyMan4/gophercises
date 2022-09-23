@@ -201,6 +201,17 @@ func (fd *FunctionDef) ToString() string {
 
 func (fd *FunctionDef) statementNode() {}
 
+// return statement
+type ReturnStatement struct {
+	ReturnVal Expression
+}
+
+func (rs *ReturnStatement) ToString() string {
+	return fmt.Sprintf("return %s;", rs.ReturnVal.ToString())
+}
+
+func (rs *ReturnStatement) statementNode() {}
+
 // program is a list of statements
 type Program struct {
 	Statements []Statement

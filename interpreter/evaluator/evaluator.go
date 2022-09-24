@@ -19,24 +19,33 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.BooleanLiteral:
 		return &object.BooleanObject{Value: node.Value}
 	case *ast.IdentifierExpression:
-		return env.Get(node.Value)
+		obj, ok := env.Get(node.Value)
+
+		if !ok {
+			fmt.Printf("identifier %s is not defined\n", node.Value)
+			os.Exit(1)
+		}
+
+		return obj
 	case *ast.InfixExpression:
 		left := Eval(node.Left, env)
 		right := Eval(node.Right, env)
 		return evalInfixExpression(node.Op, left, right)
 	case *ast.VarStatement:
 		val := Eval(node.Value, env)
-		env.Set(node.Identifier, val)
+		env.Set(node.Identifier, val, true)
 	case *ast.AssignStatement:
-		if env.Get(node.Identifier) == nil {
+		obj, ok := env.Get(node.Identifier)
+
+		if !ok {
 			fmt.Printf("variable %s has not been declared\n", node.Identifier)
 			os.Exit(1)
 		}
 
-		left := env.Get(node.Identifier)
+		left := obj
 		right := Eval(node.Value, env)
 		val := evalAssignStatement(node.AssignOp, left, right)
-		env.Set(node.Identifier, val)
+		env.Set(node.Identifier, val, false)
 	case *ast.IfStatement:
 		condResult := Eval(node.Condition, env)
 		if condResult.Type() != object.BOOLEAN_OBJ {
@@ -66,7 +75,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			Eval(node, env)
 		}
 	case *ast.FunctionDef:
-		env.Set(node.Name, &object.FunctionObject{Args: node.Args, Statements: node.Statements})
+		env.Set(node.Name, &object.FunctionObject{Args: node.Args, Statements: node.Statements}, true)
 	case *ast.FunctionCall:
 		evalFunctionCall(node, env)
 	}
@@ -223,12 +232,13 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 }
 
 func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) {
-	if env.Get(functionCall.Name) == nil {
+	obj, ok := env.Get(functionCall.Name)
+	if !ok {
 		fmt.Printf("function %s is not defined\n", functionCall.Name)
 		os.Exit(1)
 	}
 
-	function := env.Get(functionCall.Name).(*object.FunctionObject)
+	function := obj.(*object.FunctionObject)
 
 	if len(functionCall.Args) != len(function.Args) {
 		fmt.Printf("expected %d arguments for function %s, received %d\n", len(function.Args), functionCall.Name, len(functionCall.Args))
@@ -239,11 +249,18 @@ func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) {
 
 	// assign function args as values in child environment
 	for i := range function.Args {
-		childEnv.Set(function.Args[i], Eval(functionCall.Args[i], env))
+		childEnv.Set(function.Args[i], Eval(functionCall.Args[i], env), true)
 	}
 
 	// evaluate each statement in the function
 	for i := range function.Statements {
 		Eval(function.Statements[i], childEnv)
 	}
+
+	// print out the state of the program
+	fmt.Printf("child env values for function call %s\n", functionCall)
+	for k, v := range childEnv.GetEnvMap() {
+		fmt.Printf("%s: %s\n", k, v.ToString())
+	}
+	fmt.Println("------------------------------")
 }

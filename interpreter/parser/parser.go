@@ -118,11 +118,14 @@ func (p *Parser) parseVarStmt() ast.Statement {
 	p.nextToken()
 	stmt.Value = p.parseExpression()
 
-	if !p.expectNextToken(token.SEMI) {
+	// TODO: figure out where cursor should leave off after parsing function call (on semi colon or right paren)
+	if p.curToken.Type != token.SEMI && !p.expectNextToken(token.SEMI) {
 		return nil
 	}
 
-	p.nextToken()
+	if p.curToken.Type != token.SEMI {
+		p.nextToken()
+	}
 
 	return stmt
 }
@@ -206,6 +209,11 @@ func (p *Parser) parseBooleanLiteral() ast.Expression {
 
 // TODO: handle parsing function calls
 func (p *Parser) parseIdent() ast.Expression {
+	if p.peekToken.Type == token.LPAREN {
+		res := p.parseFunctionCall().(ast.Expression)
+		return res
+	}
+
 	return &ast.IdentifierExpression{Value: p.curToken.Literal}
 }
 

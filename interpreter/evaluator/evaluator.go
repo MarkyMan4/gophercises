@@ -77,7 +77,9 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 	case *ast.FunctionDef:
 		env.Set(node.Name, &object.FunctionObject{Args: node.Args, Statements: node.Statements}, true)
 	case *ast.FunctionCall:
-		evalFunctionCall(node, env)
+		return evalFunctionCall(node, env)
+	case *ast.ReturnStatement:
+		return Eval(node.ReturnVal, env)
 	}
 
 	return nil
@@ -231,7 +233,7 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 	}
 }
 
-func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) {
+func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) object.Object {
 	obj, ok := env.Get(functionCall.Name)
 	if !ok {
 		fmt.Printf("function %s is not defined\n", functionCall.Name)
@@ -254,13 +256,20 @@ func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) {
 
 	// evaluate each statement in the function
 	for i := range function.Statements {
-		Eval(function.Statements[i], childEnv)
+		res := Eval(function.Statements[i], childEnv)
+
+		switch function.Statements[i].(type) {
+		case *ast.ReturnStatement:
+			return res
+		}
 	}
 
 	// print out the state of the program
-	fmt.Printf("child env values for function call %s\n", functionCall)
-	for k, v := range childEnv.GetEnvMap() {
-		fmt.Printf("%s: %s\n", k, v.ToString())
-	}
-	fmt.Println("------------------------------")
+	// fmt.Printf("child env values for function call %s\n", functionCall)
+	// for k, v := range childEnv.GetEnvMap() {
+	// 	fmt.Printf("%s: %s\n", k, v.ToString())
+	// }
+	// fmt.Println("------------------------------")
+
+	return &object.NullObject{}
 }

@@ -4,77 +4,76 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/MarkyMan4/simple-interpreter/ast"
 	"github.com/MarkyMan4/simple-interpreter/lexer"
 )
 
-func TestParse(t *testing.T) {
-	l := lexer.NewLexer("var x = 1; while(x < 5) {x += 1;}")
-	// l := lexer.NewLexer("var x = 1; someFunc(x, 2);")
-	// l := lexer.NewLexer("var x = 1;")
+// func TestParse(t *testing.T) {
+// 	l := lexer.NewLexer("var x = 1; while(x < 5) {x += 1;}")
+// 	// l := lexer.NewLexer("var x = 1; someFunc(x, 2);")
+// 	// l := lexer.NewLexer("var x = 1;")
+// 	p := NewParser(l)
+// 	prog := p.Parse()
+
+// 	// stmt := prog.Statements[1].(*ast.WhileStatement)
+
+// 	// fmt.Println(stmt.Name)
+
+// 	for i := range prog.Statements {
+// 		fmt.Println(prog.Statements[i])
+// 	}
+
+// 	// fmt.Println(stmt.ToString())
+
+// 	// for i := range stmt.Statements {
+// 	// 	fmt.Println(stmt.Statements[i])
+// 	// }
+
+// 	// tok := l.NextToken()
+
+// 	// for tok.Type != token.EOF {
+// 	// 	fmt.Println(tok)
+// 	// 	tok = l.NextToken()
+// 	// }
+// }
+
+// func TestParseIf(t *testing.T) {
+// 	l := lexer.NewLexer("var x = 1; if(x < 5) {x += 1;}")
+// 	// l := lexer.NewLexer("var x = 1; someFunc(x, 2);")
+// 	// l := lexer.NewLexer("var x = 1;")
+// 	p := NewParser(l)
+// 	prog := p.Parse()
+
+// 	stmt := prog.Statements[1].(*ast.IfStatement)
+
+// 	fmt.Println(stmt.ToString())
+
+// 	// for i := range prog.Statements {
+// 	// 	fmt.Println(prog.Statements[i])
+// 	// }
+
+// 	// fmt.Println(stmt.ToString())
+
+// 	// for i := range stmt.Statements {
+// 	// 	fmt.Println(stmt.Statements[i])
+// 	// }
+// }
+
+func TestParseFuncDef(t *testing.T) {
+	l := lexer.NewLexer("fun test(x, y) {var a = x; b = y;} var x = test(1, 2);")
 	p := NewParser(l)
 	prog := p.Parse()
 
-	// stmt := prog.Statements[1].(*ast.WhileStatement)
+	// stmt := prog.Statements[0].(*ast.FunctionDef)
 
-	// fmt.Println(stmt.Name)
+	// fmt.Println(stmt.ToString())
+
+	// stmt1 := prog.Statements[1].(*ast.VarStatement)
+
+	// fmt.Println(stmt1.ToString())
 
 	for i := range prog.Statements {
 		fmt.Println(prog.Statements[i])
 	}
-
-	// fmt.Println(stmt.ToString())
-
-	// for i := range stmt.Statements {
-	// 	fmt.Println(stmt.Statements[i])
-	// }
-
-	// tok := l.NextToken()
-
-	// for tok.Type != token.EOF {
-	// 	fmt.Println(tok)
-	// 	tok = l.NextToken()
-	// }
-}
-
-func TestParseIf(t *testing.T) {
-	l := lexer.NewLexer("var x = 1; if(x < 5) {x += 1;}")
-	// l := lexer.NewLexer("var x = 1; someFunc(x, 2);")
-	// l := lexer.NewLexer("var x = 1;")
-	p := NewParser(l)
-	prog := p.Parse()
-
-	stmt := prog.Statements[1].(*ast.IfStatement)
-
-	fmt.Println(stmt.ToString())
-
-	// for i := range prog.Statements {
-	// 	fmt.Println(prog.Statements[i])
-	// }
-
-	// fmt.Println(stmt.ToString())
-
-	// for i := range stmt.Statements {
-	// 	fmt.Println(stmt.Statements[i])
-	// }
-}
-
-func TestParseFuncDef(t *testing.T) {
-	l := lexer.NewLexer("fun test(x, y) {var a = x; b = y;} test(1, 2);")
-	p := NewParser(l)
-	prog := p.Parse()
-
-	stmt := prog.Statements[0].(*ast.FunctionDef)
-
-	fmt.Println(stmt.ToString())
-
-	stmt1 := prog.Statements[1].(*ast.FunctionCall)
-
-	fmt.Println(stmt1.ToString())
-
-	// for i := range prog.Statements {
-	// 	fmt.Println(prog.Statements[i])
-	// }
 
 	// fmt.Println(stmt.ToString())
 

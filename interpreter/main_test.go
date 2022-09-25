@@ -3,14 +3,29 @@ package main
 import (
 	"fmt"
 	"testing"
+
+	"github.com/MarkyMan4/simple-interpreter/ast"
 )
 
-func TestMain(t *testing.T) {
-	m := map[string]string{}
+func getObj() ast.Statement {
+	return &ast.ReturnStatement{ReturnVal: &ast.IntegerLiteral{Value: 4}}
+}
 
-	if res, ok := m["test"]; !ok {
-		fmt.Println("nil")
-	} else {
-		fmt.Println(res)
+func TestMain(t *testing.T) {
+	// m := map[string]string{}
+
+	// if res, ok := m["test"]; !ok {
+	// 	fmt.Println("nil")
+	// } else {
+	// 	fmt.Println(res)
+	// }
+
+	obj := getObj()
+
+	switch obj.(type) {
+	case *ast.ReturnStatement:
+		fmt.Println("yea")
+	default:
+		fmt.Println("no")
 	}
 }

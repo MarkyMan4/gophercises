@@ -27,8 +27,9 @@ func TestVar(t *testing.T) {
 }
 
 func TestWhile(t *testing.T) {
-	input := "var x = 1; while(x < 5) {x += 1;}"
-	// input := "var x = true; x = 4;"
+	fmt.Println("---------------------")
+	// input := "var x = 1; while(x < 5) {x += 1;}"
+	input := "fun test(x, y) {var a = x; b = y;} var x = test(1, 2);"
 	lex := NewLexer(input)
 
 	tok := lex.NextToken()

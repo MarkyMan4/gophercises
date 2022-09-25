@@ -37,6 +37,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 		token.INT:     p.parseIntegerLiteral,
 		token.FLOAT:   p.parseFloatLiteral,
 		token.BOOLEAN: p.parseBooleanLiteral,
+		token.STRING:  p.parseStringLiteral,
 		token.IDENT:   p.parseIdent,
 	}
 
@@ -205,6 +206,10 @@ func (p *Parser) parseBooleanLiteral() ast.Expression {
 	boolLit.Value = val
 
 	return boolLit
+}
+
+func (p *Parser) parseStringLiteral() ast.Expression {
+	return &ast.StringLiteral{Value: p.curToken.Literal}
 }
 
 // handles parsing variables and function calls

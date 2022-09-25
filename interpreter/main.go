@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// print out the state of the program
-	for k, v := range env.GetEnvMap() {
-		fmt.Printf("%s: %s\n", k, v.ToString())
-	}
+	// for k, v := range env.GetEnvMap() {
+	// 	fmt.Printf("%s: %s\n", k, v.ToString())
+	// }
 }

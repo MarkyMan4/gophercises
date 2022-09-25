@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/MarkyMan4/simple-interpreter/ast"
 	"github.com/MarkyMan4/simple-interpreter/lexer"
 )
 
@@ -74,6 +75,31 @@ func TestParseFuncDef(t *testing.T) {
 	for i := range prog.Statements {
 		fmt.Println(prog.Statements[i])
 	}
+
+	// fmt.Println(stmt.ToString())
+
+	// for i := range stmt.Statements {
+	// 	fmt.Println(stmt.Statements[i])
+	// }
+}
+
+func TestParseString(t *testing.T) {
+	fmt.Println("------ test string parse -------")
+	l := lexer.NewLexer("print(\"hello\");")
+	p := NewParser(l)
+	prog := p.Parse()
+
+	stmt := prog.Statements[0].(*ast.FunctionCall)
+
+	fmt.Println(stmt.ToString())
+
+	// stmt1 := prog.Statements[1].(*ast.VarStatement)
+
+	// fmt.Println(stmt1.ToString())
+
+	// for i := range prog.Statements {
+	// 	fmt.Println(prog.Statements[i])
+	// }
 
 	// fmt.Println(stmt.ToString())
 

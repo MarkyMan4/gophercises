@@ -207,7 +207,7 @@ func (p *Parser) parseBooleanLiteral() ast.Expression {
 	return boolLit
 }
 
-// TODO: handle parsing function calls
+// handles parsing variables and function calls
 func (p *Parser) parseIdent() ast.Expression {
 	if p.peekToken.Type == token.LPAREN {
 		res := p.parseFunctionCall().(ast.Expression)

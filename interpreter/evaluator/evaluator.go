@@ -6,6 +6,7 @@ import (
 
 	"github.com/MarkyMan4/simple-interpreter/ast"
 	"github.com/MarkyMan4/simple-interpreter/object"
+	"github.com/MarkyMan4/simple-interpreter/stdlib"
 )
 
 func Eval(node ast.Node, env *object.Environment) object.Object {
@@ -234,6 +235,19 @@ func evalFloatInfixExpression(op string, left object.Object, right object.Object
 }
 
 func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) object.Object {
+	if _, ok := env.Get(functionCall.Name); ok {
+		return evalUserDefinedFun(functionCall, env)
+	} else if _, ok := stdlib.BuiltInFuns[functionCall.Name]; ok {
+		return evalBuiltInFun(functionCall, env)
+	}
+
+	fmt.Printf("function %s is not defined\n", functionCall.Name)
+	os.Exit(1)
+
+	return nil
+}
+
+func evalUserDefinedFun(functionCall *ast.FunctionCall, env *object.Environment) object.Object {
 	obj, ok := env.Get(functionCall.Name)
 	if !ok {
 		fmt.Printf("function %s is not defined\n", functionCall.Name)
@@ -272,4 +286,14 @@ func evalFunctionCall(functionCall *ast.FunctionCall, env *object.Environment) o
 	// fmt.Println("------------------------------")
 
 	return &object.NullObject{}
+}
+
+func evalBuiltInFun(functionCall *ast.FunctionCall, env *object.Environment) object.Object {
+	args := []object.Object{}
+
+	for i := range functionCall.Args {
+		args = append(args, Eval(functionCall.Args[i], env))
+	}
+
+	return stdlib.BuiltInFuns[functionCall.Name](args...)
 }

@@ -113,6 +113,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.Token{Type: token.SEMI, Literal: string(l.curChar)}
 	case ',':
 		tok = token.Token{Type: token.COM, Literal: string(l.curChar)}
+	case '"':
+		tok = token.Token{Type: token.DQUOTE, Literal: string(l.curChar)}
 	case rune(0):
 		tok = token.Token{Type: token.EOF, Literal: ""}
 	default:
@@ -162,6 +164,14 @@ func (l *Lexer) readNumber() string {
 
 	return numTok
 }
+
+// func (l *Lexer) readString() string {
+// 	strTok := ""
+
+// 	// current token is ", read past this and then read until another " is seen
+// 	l.nextChar()
+
+// }
 
 func (l *Lexer) readIdent() token.Token {
 	literal := string(l.curChar)

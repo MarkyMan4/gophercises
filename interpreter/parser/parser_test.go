@@ -92,18 +92,15 @@ func TestParseString(t *testing.T) {
 	stmt := prog.Statements[0].(*ast.FunctionCall)
 
 	fmt.Println(stmt.ToString())
+}
 
-	// stmt1 := prog.Statements[1].(*ast.VarStatement)
+func TestParseObjectFunctionCall(t *testing.T) {
+	fmt.Println("------ test object function call -------")
+	l := lexer.NewLexer("var s = \"hello\"; var x = s.substring(1, 2);")
+	p := NewParser(l)
+	prog := p.Parse()
 
-	// fmt.Println(stmt1.ToString())
+	stmt := prog.Statements[1].(*ast.VarStatement)
 
-	// for i := range prog.Statements {
-	// 	fmt.Println(prog.Statements[i])
-	// }
-
-	// fmt.Println(stmt.ToString())
-
-	// for i := range stmt.Statements {
-	// 	fmt.Println(stmt.Statements[i])
-	// }
+	fmt.Println(stmt.ToString())
 }

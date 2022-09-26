@@ -81,6 +81,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalFunctionCall(node, env)
 	case *ast.ReturnStatement:
 		return Eval(node.ReturnVal, env)
+	case *ast.ObjectFunctionExpression:
+		return evalObjFunCall(node, env)
 	}
 
 	return nil
@@ -296,4 +298,19 @@ func evalBuiltInFun(functionCall *ast.FunctionCall, env *object.Environment) obj
 	}
 
 	return stdlib.BuiltInFuns[functionCall.Name](args...)
+}
+
+func evalObjFunCall(objFunCall *ast.ObjectFunctionExpression, env *object.Environment) object.Object {
+	args := []object.Object{Eval(objFunCall.Object, env)}
+	fnCall := objFunCall.Function.(*ast.FunctionCall)
+
+	for i := range fnCall.Args {
+		args = append(args, Eval(fnCall.Args[i], env))
+	}
+
+	if fn, ok := stdlib.BuiltInFuns[fnCall.Name]; ok {
+		return fn(args...)
+	}
+
+	return &object.ErrorObject{Message: fmt.Sprintf("function %s is not defined\n", fnCall.Name)}
 }

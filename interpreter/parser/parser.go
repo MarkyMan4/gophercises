@@ -56,6 +56,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 		token.EQ:     p.parseInfixExpression,
 		token.GT:     p.parseInfixExpression,
 		token.GTE:    p.parseInfixExpression,
+		token.DOT:    p.parseObjFuncExpression,
 	}
 
 	return p
@@ -412,4 +413,13 @@ func (p *Parser) parseFunctionCall() ast.Statement {
 	}
 
 	return funcCall
+}
+
+// this is just an infix expression where left is an object, op is '.' and right is the function call for that object
+func (p *Parser) parseObjFuncExpression(obj ast.Expression) ast.Expression {
+	fnCall := &ast.ObjectFunctionExpression{Object: obj}
+	p.nextToken()
+	fnCall.Function = p.parseIdent()
+
+	return fnCall
 }

@@ -4,3 +4,8 @@ var x = 2;
 print(x + 2);
 
 print("value of x is:", x);
+
+var s = "abcdef";
+var res = s.substr(1, 4);
+
+print(res);

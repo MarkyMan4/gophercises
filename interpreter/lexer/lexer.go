@@ -115,6 +115,8 @@ func (l *Lexer) NextToken() token.Token {
 		tok = token.Token{Type: token.COM, Literal: string(l.curChar)}
 	case '"':
 		tok = l.readString()
+	case '.':
+		tok = token.Token{Type: token.DOT, Literal: string(l.curChar)}
 	case rune(0):
 		tok = token.Token{Type: token.EOF, Literal: ""}
 	default:

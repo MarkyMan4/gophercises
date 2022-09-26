@@ -36,6 +36,7 @@ const (
 	SEMI    = ";"
 	COM     = ","
 	DQUOTE  = "\""
+	DOT     = "."
 	IDENT   = "IDENT"
 	INT     = "INT"
 	FLOAT   = "FLOAT"

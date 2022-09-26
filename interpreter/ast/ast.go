@@ -80,6 +80,18 @@ func (i *IdentifierExpression) ToString() string {
 
 func (i *IdentifierExpression) expressionNode() {}
 
+// function calls on an object, e.g. var a = "hello"; var b = s.substring(1, 3);
+type ObjectFunctionExpression struct {
+	Object   Expression
+	Function Expression
+}
+
+func (o *ObjectFunctionExpression) ToString() string {
+	return fmt.Sprintf("%s.%s", o.Object.ToString(), o.Function.ToString())
+}
+
+func (o *ObjectFunctionExpression) expressionNode() {}
+
 // statements
 type VarStatement struct {
 	Identifier string
@@ -120,7 +132,7 @@ func (fc *FunctionCall) ToString() string {
 		}
 	}
 
-	funcCallStr := fmt.Sprintf("%s(%s);", fc.Name, argsStr)
+	funcCallStr := fmt.Sprintf("%s(%s)", fc.Name, argsStr)
 
 	return funcCallStr
 }

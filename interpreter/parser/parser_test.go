@@ -115,3 +115,15 @@ func TestParseArray(t *testing.T) {
 
 	fmt.Println(stmt.ToString())
 }
+
+func TestParseArrayIndex(t *testing.T) {
+	fmt.Println("------ test parsing array index -------")
+	l := lexer.NewLexer("var xs = [1,2,3,4]; var i = xs[2]; var y = 3.45;")
+	p := NewParser(l)
+	prog := p.Parse()
+
+	for i := range prog.Statements {
+		stmt := prog.Statements[i].(*ast.VarStatement)
+		fmt.Println(stmt.ToString())
+	}
+}

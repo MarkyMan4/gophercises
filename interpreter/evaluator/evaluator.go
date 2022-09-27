@@ -21,6 +21,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.BooleanObject{Value: node.Value}
 	case *ast.ArrayExpression:
 		return evalArrayExpression(node.Items, env)
+	case *ast.ArrayIndexExpression:
+		return evalArrayIndexExpression(node, env)
 	case *ast.IdentifierExpression:
 		obj, ok := env.Get(node.Value)
 
@@ -325,4 +327,24 @@ func evalArrayExpression(items []ast.Expression, env *object.Environment) object
 	}
 
 	return arr
+}
+
+func evalArrayIndexExpression(arrIdxExpr *ast.ArrayIndexExpression, env *object.Environment) object.Object {
+	arr, ok := Eval(arrIdxExpr.Arr, env).(*object.ArrayObject)
+
+	if !ok {
+		return &object.ErrorObject{Message: fmt.Sprintf("cannot index object of type %s", arr.Type())}
+	}
+
+	idx, ok := Eval(arrIdxExpr.Index, env).(*object.IntegerObject)
+
+	if !ok {
+		return &object.ErrorObject{Message: fmt.Sprintf("cannot use object of type %s as index", idx.Type())}
+	}
+
+	if int(idx.Value) >= len(arr.Items) {
+		return &object.ErrorObject{Message: "array index out of bounds"}
+	}
+
+	return arr.Items[idx.Value]
 }

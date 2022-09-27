@@ -58,6 +58,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 		token.GT:     p.parseInfixExpression,
 		token.GTE:    p.parseInfixExpression,
 		token.DOT:    p.parseObjFuncExpression,
+		token.LBRACK: p.parseIndexExpression,
 	}
 
 	return p
@@ -451,4 +452,22 @@ func (p *Parser) parseArray() ast.Expression {
 	}
 
 	return arr
+}
+
+func (p *Parser) parseIndexExpression(arr ast.Expression) ast.Expression {
+	idxExpr := &ast.ArrayIndexExpression{Arr: arr}
+	p.nextToken()
+	idxExpr.Index = p.parseExpression()
+
+	if p.curToken.Type == token.RBRACK {
+		errMsg := fmt.Sprintf("Unexpected token %s.", p.curToken.Literal)
+		p.Errors = append(p.Errors, errMsg)
+
+		fmt.Println(errMsg)
+		return nil
+	}
+
+	p.nextToken()
+
+	return idxExpr
 }

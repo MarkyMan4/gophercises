@@ -111,6 +111,18 @@ func (a *ArrayExpression) ToString() string {
 
 func (a *ArrayExpression) expressionNode() {}
 
+// e.g. var arr = [1,2,3]; var i = arr[0];
+type ArrayIndexExpression struct {
+	Arr   Expression
+	Index Expression
+}
+
+func (a *ArrayIndexExpression) ToString() string {
+	return fmt.Sprintf("%s[%s]", a.Arr.ToString(), a.Index.ToString())
+}
+
+func (a *ArrayIndexExpression) expressionNode() {}
+
 // statements
 type VarStatement struct {
 	Identifier string

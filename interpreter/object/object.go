@@ -7,6 +7,7 @@ const (
 	BOOLEAN_OBJ  = "BOOLEAN"
 	ERROR_OBJ    = "ERROR"
 	FUNCTION_OBJ = "FUNCTION"
+	ARRAY_OBJ    = "ARRAY"
 	NULL_OBJ     = "NULL"
 )
 

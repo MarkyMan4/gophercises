@@ -39,6 +39,7 @@ func NewParser(l *lexer.Lexer) *Parser {
 		token.BOOLEAN: p.parseBooleanLiteral,
 		token.STRING:  p.parseStringLiteral,
 		token.IDENT:   p.parseIdent,
+		token.LBRACK:  p.parseArray,
 	}
 
 	// infix parsers (e.g. +, -, *, /)
@@ -422,4 +423,32 @@ func (p *Parser) parseObjFuncExpression(obj ast.Expression) ast.Expression {
 	fnCall.Function = p.parseIdent()
 
 	return fnCall
+}
+
+func (p *Parser) parseArray() ast.Expression {
+	p.nextToken()
+	arr := &ast.ArrayExpression{Items: []ast.Expression{}}
+
+	for p.curToken.Type != token.RBRACK && p.curToken.Type != token.SEMI && p.curToken.Type != token.EOF {
+		arr.Items = append(arr.Items, p.parseExpression())
+
+		if p.peekToken.Type != token.RBRACK && p.peekToken.Type != token.COM {
+			errMsg := fmt.Sprintf("Unexpected token %s. Expected %s or %s", p.peekToken, token.RBRACK, token.COM)
+			p.Errors = append(p.Errors, errMsg)
+
+			return nil
+		}
+
+		p.nextToken()
+		p.nextToken()
+	}
+
+	if p.curToken.Type == token.EOF {
+		errMsg := fmt.Sprintf("Unexpected token %s.", p.curToken.Literal)
+		p.Errors = append(p.Errors, errMsg)
+
+		return nil
+	}
+
+	return arr
 }

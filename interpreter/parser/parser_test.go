@@ -104,3 +104,14 @@ func TestParseObjectFunctionCall(t *testing.T) {
 
 	fmt.Println(stmt.ToString())
 }
+
+func TestParseArray(t *testing.T) {
+	fmt.Println("------ test parsing array -------")
+	l := lexer.NewLexer("var xs = [1,2,3,4];")
+	p := NewParser(l)
+	prog := p.Parse()
+
+	stmt := prog.Statements[0].(*ast.VarStatement)
+
+	fmt.Println(stmt.ToString())
+}

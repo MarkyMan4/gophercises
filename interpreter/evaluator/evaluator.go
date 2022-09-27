@@ -19,6 +19,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return &object.StringObject{Value: node.Value}
 	case *ast.BooleanLiteral:
 		return &object.BooleanObject{Value: node.Value}
+	case *ast.ArrayExpression:
+		return evalArrayExpression(node.Items, env)
 	case *ast.IdentifierExpression:
 		obj, ok := env.Get(node.Value)
 
@@ -313,4 +315,14 @@ func evalObjFunCall(objFunCall *ast.ObjectFunctionExpression, env *object.Enviro
 	}
 
 	return &object.ErrorObject{Message: fmt.Sprintf("function %s is not defined\n", fnCall.Name)}
+}
+
+func evalArrayExpression(items []ast.Expression, env *object.Environment) object.Object {
+	arr := &object.ArrayObject{Items: []object.Object{}}
+
+	for i := range items {
+		arr.Items = append(arr.Items, Eval(items[i], env))
+	}
+
+	return arr
 }

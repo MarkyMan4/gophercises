@@ -92,6 +92,25 @@ func (o *ObjectFunctionExpression) ToString() string {
 
 func (o *ObjectFunctionExpression) expressionNode() {}
 
+type ArrayExpression struct {
+	Items []Expression
+}
+
+func (a *ArrayExpression) ToString() string {
+	arrStr := ""
+
+	for i := range a.Items {
+		arrStr += a.Items[i].ToString()
+		if i < len(a.Items)-1 {
+			arrStr += ","
+		}
+	}
+
+	return fmt.Sprintf("[%s]", arrStr)
+}
+
+func (a *ArrayExpression) expressionNode() {}
+
 // statements
 type VarStatement struct {
 	Identifier string

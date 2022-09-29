@@ -70,7 +70,9 @@ func (l *Lexer) NextToken() token.Token {
 			tok = token.Token{Type: token.MULT, Literal: string(l.curChar)}
 		}
 	case '/':
-		if l.peek() == '=' {
+		if l.peek() == '/' {
+			l.readToEndOfLine()
+		} else if l.peek() == '=' {
 			tok = token.Token{Type: token.DIVEQ, Literal: "/="}
 			l.nextChar()
 		} else {
@@ -134,6 +136,13 @@ func (l *Lexer) NextToken() token.Token {
 
 func (l *Lexer) skipWhitespace() {
 	for l.curChar == ' ' || l.curChar == '\n' || l.curChar == '\t' || l.curChar == '\r' {
+		l.nextChar()
+	}
+}
+
+// used for comments
+func (l *Lexer) readToEndOfLine() {
+	for l.curChar != '\n' {
 		l.nextChar()
 	}
 }

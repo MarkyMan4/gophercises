@@ -1,6 +1,9 @@
 var xs = [1, 2.4, "a", true];
 print(xs);
-print("value at index 0:", xs[0]);
-print("value at index 1:", xs[1]);
-print("value at index 2:", xs[2]);
-print("value at index 3:", xs[3]);
+print("length of xs:", xs.length());
+
+var i = 0;
+while(i < xs.length()) {
+    print("value at index", i, ":", xs[i]);
+    i += 1;
+}

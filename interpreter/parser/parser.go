@@ -441,7 +441,10 @@ func (p *Parser) parseArray() ast.Expression {
 		}
 
 		p.nextToken()
-		p.nextToken()
+
+		if p.curToken.Type != token.RBRACK {
+			p.nextToken()
+		}
 	}
 
 	if p.curToken.Type == token.EOF {

@@ -7,6 +7,7 @@ Make an API request, unmarshal the data and store it in a database
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -47,5 +48,8 @@ func main() {
 		log.Fatalln("failed to read response body")
 	}
 
-	fmt.Println(string(body))
+	var data map[string]interface{}
+	json.Unmarshal(body, &data)
+
+	InsertData(data)
 }
